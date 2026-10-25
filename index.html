@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ec">
+  <meta name="description" content="An interactive safety-first explainer about protective electrical devices, three-phase power, and a clearly labeled synthetic model.">
+  <title>The Circuit Confusion Lab</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f3ec;
+      --ink: #20231f;
+      --muted: #70736b;
+      --line: #dcd9ce;
+      --green: #38674d;
+      --lime: #d5ef79;
+      --orange: #e17e54;
+      --blue: #587fa8;
+      --card: #fbfaf6;
+      --mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
+      --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--paper);
+      scroll-behavior: smooth;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; }
+    button, input { font: inherit; }
+    a { color: inherit; }
+    .wrap { width: min(1100px, calc(100% - 44px)); margin: 0 auto; }
+    .topbar {
+      min-height: 64px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand, .top-note, .eyebrow, .kicker, .device-tag, .metric-label, .model-label, .footer-note {
+      font: 10px/1.5 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+    .brand { font-weight: 500; }
+    .top-note { color: var(--muted); text-align: right; }
+    main { overflow: hidden; }
+    .hero { padding: clamp(64px, 10vw, 112px) 0 58px; }
+    .eyebrow, .kicker { color: var(--green); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 860px;
+      margin: 17px 0 20px;
+      font-weight: 500;
+      font-size: clamp(48px, 8.5vw, 102px);
+      line-height: .94;
+      letter-spacing: -.075em;
+    }
+    h1 em { font-family: Georgia, serif; font-weight: 400; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap: 44px;
+      align-items: end;
+      margin-top: 32px;
+    }
+    .lede {
+      max-width: 660px;
+      margin: 0;
+      color: #55584f;
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+    }
+    .safety-note {
+      border-left: 3px solid var(--orange);
+      padding: 2px 0 2px 15px;
+      color: #55584f;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .safety-note strong { color: var(--ink); }
+    .jump-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 28px;
+    }
+    .jump-links a {
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      transition: background .18s ease, border-color .18s ease;
+    }
+    .jump-links a:hover { background: var(--lime); border-color: var(--lime); }
+    .section { padding: 56px 0; border-top: 1px solid var(--line); }
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(150px, .55fr) 1.45fr;
+      gap: 25px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+    .kicker { padding-top: 8px; }
+    h2 {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(32px, 5vw, 57px);
+      line-height: 1;
+      letter-spacing: -.06em;
+      font-weight: 500;
+    }
+    .section-intro {
+      margin: 15px 0 0;
+      max-width: 650px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    .device-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .device-card {
+      min-height: 200px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+    }
+    .device-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .device-tag { color: var(--green); }
+    .device-icon { width: 34px; height: 34px; color: var(--green); }
+    h3 { margin: 20px 0 9px; font-size: 22px; letter-spacing: -.04em; }
+    .device-card p { margin: 0; max-width: 480px; color: #5b5e55; font-size: 13px; line-height: 1.65; }
+    .note-box {
+      margin-top: 15px;
+      padding: 16px 18px;
+      background: #e9eee4;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #42483e;
+    }
+    .note-box strong { color: var(--ink); }
+    .claim-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .claim-card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 22px;
+    }
+    .claim-card h3 { margin: 12px 0 8px; }
+    .claim-card p { margin: 0; color: #5b5e55; font-size: 13px; line-height: 1.65; }
+    .claim-card .device-tag { display: block; }
+    .visual-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .visual-card { margin: 0; background: var(--card); border: 1px solid var(--line); padding: 20px; }
+    .visual-card h3 { margin: 0 0 8px; }
+    .visual-card > p { color: #62655c; font-size: 12px; line-height: 1.6; margin: 0 0 14px; }
+    .diagram-svg { width: 100%; height: auto; display: block; background: #efede5; }
+    .diagram-svg text { font: 10px var(--mono); fill: #44483f; }
+    .diagram-svg .small { font-size: 8px; fill: #686b61; }
+    .phase-wave { fill: none; stroke-width: 2.5; }
+    .phase-a { stroke: #38674d; }
+    .phase-b { stroke: #e17e54; }
+    .phase-c { stroke: #587fa8; }
+    .diagram-svg .phase-a-label { fill: #38674d; }
+    .diagram-svg .phase-b-label { fill: #b45835; }
+    .diagram-svg .phase-c-label { fill: #426b91; }
+    .path-box { fill: #fbfaf6; stroke: #c9c6ba; stroke-width: 1; }
+    .path-box.cue { fill: #e5eee4; stroke: #92a895; }
+    .path-box.shortcut { fill: #f8e8df; stroke: #d8a289; }
+    .path-box.claimed { fill: #f4ded9; stroke: #d3877a; }
+    .path-box.unsupported { fill: #efede5; stroke: #aaa79c; stroke-dasharray: 4 3; }
+    .path-arrow { fill: none; stroke: #73766c; stroke-width: 1.5; marker-end: url(#path-arrowhead); }
+    .cross-line { stroke: #a83c31; stroke-width: 3; stroke-linecap: round; }
+    .diagram-caption { color: var(--muted); font-size: 10px; line-height: 1.5; margin: 10px 0 0 !important; }
+    .model-panel {
+      background: #202a24;
+      color: #f5f3ec;
+      padding: clamp(20px, 4vw, 36px);
+      border-radius: 3px;
+    }
+    .model-intro {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .model-label { color: var(--lime); }
+    .model-disclaimer {
+      max-width: 480px;
+      color: #c5c9bf;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .model-grid { display: grid; grid-template-columns: .82fr 1.18fr; gap: 32px; }
+    .controls { display: grid; gap: 20px; align-content: start; }
+    .range-row label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .range-row output { color: var(--lime); font-family: var(--mono); }
+    input[type="range"] { width: 100%; accent-color: var(--lime); }
+    .model-visual {
+      min-height: 250px;
+      padding: 15px;
+      background: #29352d;
+      border: 1px solid #475248;
+      display: grid;
+      align-content: center;
+    }
+    .network { width: 100%; height: 155px; overflow: visible; }
+    .network line { stroke: #849083; stroke-width: 1; opacity: .35; }
+    .network line.active { stroke: var(--lime); opacity: .95; stroke-width: 1.8; }
+    .network circle { fill: #3c4a3e; stroke: #9fa99b; stroke-width: 1.5; }
+    .network circle.active { fill: var(--lime); stroke: var(--lime); }
+    .network text { fill: #d9ddd5; font: 9px var(--mono); }
+    .network text.output-label { fill: var(--lime); }
+    .network-key {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #bfc6bc;
+      font: 9px/1.5 var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .output-bars { margin-top: 18px; display: grid; gap: 12px; }
+    .bar-line { display: grid; grid-template-columns: 130px 1fr 34px; gap: 10px; align-items: center; }
+    .bar-label { color: #d6dbd2; font-size: 11px; }
+    .bar-track { height: 5px; background: #48534a; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--lime); width: 0; transition: width .35s ease; }
+    .bar-fill.secondary { background: #9db7d6; }
+    .bar-value { color: #eff2e9; font: 10px var(--mono); text-align: right; }
+    .model-footnote { margin: 22px 0 0; color: #adb6ab; font-size: 11px; line-height: 1.6; }
+    .evo-layout { display: grid; grid-template-columns: .85fr 1.15fr; gap: 14px; }
+    .evo-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 24px;
+    }
+    .evo-card h3 { margin-top: 0; }
+    .evo-card p { color: #66695f; font-size: 13px; line-height: 1.65; }
+    .button {
+      border: 0;
+      background: var(--green);
+      color: white;
+      cursor: pointer;
+      border-radius: 2px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .button:hover { background: #294b39; }
+    .button:active { transform: translateY(1px); }
+    .button:disabled { opacity: .65; cursor: wait; }
+    .evo-output {
+      margin-top: 16px;
+      padding: 14px;
+      background: #e9eee4;
+      color: #3e473d;
+      min-height: 77px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .chart-wrap { min-height: 200px; }
+    #evo-chart { width: 100%; height: 185px; display: block; }
+    #evo-chart .gridline { stroke: #dddacf; stroke-width: 1; }
+    #evo-chart .chart-line { fill: none; stroke: var(--green); stroke-width: 2.5; }
+    #evo-chart .chart-dot { fill: var(--orange); }
+    #evo-chart text { fill: #76786f; font: 10px var(--mono); }
+    .chart-caption { color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .reason-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); }
+    .reason {
+      min-height: 170px;
+      background: var(--card);
+      padding: 19px;
+    }
+    .reason + .reason { border-left: 1px solid var(--line); }
+    .reason-index { color: var(--green); font: 10px var(--mono); }
+    .reason h3 { margin: 20px 0 8px; font-size: 17px; }
+    .reason p { margin: 0; color: #64675e; font-size: 12px; line-height: 1.65; }
+    .sources {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 28px;
+      margin: 20px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .sources li { font-size: 12px; line-height: 1.6; color: #60635a; }
+    .sources a { color: var(--green); text-underline-offset: 3px; }
+    .sources strong { color: var(--ink); }
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 22px 0 30px;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .footer-note { color: var(--muted); }
+    .disclaimer {
+      max-width: 670px;
+      color: #64675e;
+      font-size: 11px;
+      line-height: 1.6;
+      text-align: right;
+    }
+    :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+    @media (max-width: 760px) {
+      .hero-grid, .model-grid, .evo-layout { grid-template-columns: 1fr; }
+      .hero-grid { gap: 22px; }
+      .section-heading { grid-template-columns: 1fr; gap: 10px; }
+      .device-grid, .claim-grid { grid-template-columns: 1fr; }
+      .visual-grid { grid-template-columns: 1fr; }
+      .reason-grid { grid-template-columns: repeat(2, 1fr); }
+      .reason:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
+      .reason:nth-child(4) { border-top: 1px solid var(--line); }
+      .model-intro { display: block; }
+      .model-disclaimer { margin-top: 13px; }
+      .sources { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 460px) {
+      .wrap { width: min(100% - 32px, 1100px); }
+      .top-note { max-width: 130px; }
+      .reason-grid { grid-template-columns: 1fr; }
+      .reason + .reason, .reason:nth-child(3), .reason:nth-child(4) { border-left: 0; border-top: 1px solid var(--line); }
+      .bar-line { grid-template-columns: 112px 1fr 30px; gap: 7px; }
+      .footer { display: block; }
+      .disclaimer { text-align: left; margin-top: 12px; }
+      .network-key { font-size: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar wrap">
+    <div class="brand">The Circuit Confusion Lab</div>
+    <div class="top-note">A safety-first explainer / 01</div>
+  </header>
+  <main>
+    <section class="hero wrap">
+      <div class="eyebrow">Electricity, protection &amp; human intuition</div>
+      <h1>Does less protection mean <em>more power?</em></h1>
+      <div class="hero-grid">
+        <p class="lede">Explore why someone might expect a circuit without protective devices to deliver “extra power”—and why that expectation can be dangerous. Separate the electrical facts from a clearly labeled, hypothetical model of how the belief might form.</p>
+        <aside class="safety-note"><strong>Important:</strong> This is a conceptual learning tool, not a wiring guide or electrical diagnosis. Never open a live panel. Ask a licensed electrician to inspect or alter electrical equipment.</aside>
+      </div>
+      <nav class="jump-links" aria-label="Page sections">
+        <a href="#devices">What devices do</a>
+        <a href="#more-power">The “more power” claim</a>
+        <a href="#phase-and-belief">Three-phase &amp; belief diagrams</a>
+        <a href="#brain-model">Hypothesis model</a>
+        <a href="#evolution">Evolutionary network</a>
+        <a href="#why-beliefs">Why the idea sticks</a>
+      </nav>
+    </section>
+
+    <section class="section" id="devices">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">01 / Device reality</div>
+          <div>
+            <h2>Protection is not the same as blockage.</h2>
+            <p class="section-intro">These devices have different jobs. Under ordinary conditions, correctly selected, healthy, and properly installed equipment is intended to let a supply serve its load. A protective device can interrupt supply when it detects a condition it is designed to respond to. The exact behavior depends on the device and installation.</p>
+          </div>
+        </div>
+        <div class="device-grid">
+          <article class="device-card">
+            <div class="device-top"><span class="device-tag">Overcurrent protection</span><svg class="device-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="5" width="24" height="30" rx="3"/><path d="M15 12h10M15 18h10M20 24v5"/></svg></div>
+            <h3>MCB</h3>
+            <p>A miniature circuit breaker responds to overcurrent, such as an overload or short circuit, and opens the circuit when its trip conditions are reached. It is not a general-purpose “power blocker.”</p>
+          </article>
+          <article class="device-card">
+            <div class="device-top"><span class="device-tag">Residual-current protection</span><svg class="device-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="20" cy="20" r="14"/><path d="M13 20h14M20 13v14M8 8l5 5"/></svg></div>
+            <h3>RCCB</h3>
+            <p>A residual-current circuit breaker detects an imbalance associated with current taking an unintended path and disconnects when its threshold is reached. An RCCB alone generally does not provide overload protection.</p>
+          </article>
+          <article class="device-card">
+            <div class="device-top"><span class="device-tag">Name varies by device and region</span><svg class="device-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 5 34 31H6L20 5Z"/><path d="M20 15v7M20 26v1"/></svg></div>
+            <h3>ELCB</h3>
+            <p>“ELCB” is used inconsistently. It can refer to an older voltage-operated earth-leakage breaker, or be used colloquially for residual-current protection. Check the actual device markings and local standards; the label alone may not tell you its function.</p>
+          </article>
+          <article class="device-card">
+            <div class="device-top"><span class="device-tag">Voltage management</span><svg class="device-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 20h7l4-9 7 18 4-9h8"/><circle cx="20" cy="20" r="16"/></svg></div>
+            <h3>Voltage stabilizer</h3>
+            <p>A stabilizer attempts to keep output voltage within its design range. Depending on the model, it may delay, disconnect, or fail to regulate when input is outside that range. It is not itself a universal guarantee of protection.</p>
+          </article>
+        </div>
+        <div class="note-box"><strong>Key distinction:</strong> More components can mean additional contacts, limits, failure points, or coordination requirements. A trip, poor connection, unsuitable device, fault, or out-of-range supply can interrupt service. That is different from “adding protection always prevents normal power.” Equipment selection and installation must follow local code and be handled by a qualified professional.</div>
+      </div>
+    </section>
+
+    <section class="section" id="more-power">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">02 / The “more power” claim</div>
+          <div>
+            <h2>Removing protection does not create extra supply.</h2>
+            <p class="section-intro">“Power” is often used loosely to mean current, voltage, or performance. In a correctly functioning installation, removing an MCB or residual-current device does not raise the utility supply voltage or make an appliance safely capable of more output. Actual behavior depends on the supply, load, wiring, and equipment ratings.</p>
+          </div>
+        </div>
+        <div class="claim-grid">
+          <article class="claim-card">
+            <span class="device-tag">What is generally true</span>
+            <h3>Devices have different jobs</h3>
+            <p>An MCB trips for specified overcurrent conditions. An RCCB/RCD detects specified residual-current imbalance. Neither is ordinarily a voltage regulator. A stabilizer may correct voltage within its design and capacity, and may disconnect outside its operating range.</p>
+          </article>
+          <article class="claim-card">
+            <span class="device-tag">What needs qualification</span>
+            <h3>Not every device prevents overvoltage</h3>
+            <p>MCBs and RCCBs are not universal overvoltage or surge protectors. Equipment can be damaged by supply conditions outside its ratings, but “there is no MCB/RCCB” alone does not establish that voltage is high. The specific fault and protection design matter.</p>
+          </article>
+          <article class="claim-card">
+            <span class="device-tag">Possible real interruption</span>
+            <h3>A trip is a signal to investigate</h3>
+            <p>A trip can coincide with a fault, overload, leakage, unsuitable device, wiring defect, or device problem. It is not proof that protection is stealing normal power. Do not reset repeatedly or bypass it; have a licensed electrician investigate.</p>
+          </article>
+          <article class="claim-card">
+            <span class="device-tag">Risk, not a diagnosis</span>
+            <h3>Protection can reduce specific hazards</h3>
+            <p>Suitable, correctly installed protective devices can reduce defined shock, fire, or overcurrent risks; no single device guarantees safety or prevents every equipment failure. Omitting required protection can increase risk of electric shock, fire, injury, or death.</p>
+          </article>
+        </div>
+        <div class="note-box"><strong>Bottom line:</strong> “No protection means more power” is not a sound electrical rule. A stabilizer can change voltage within limits to compensate for supply variation; that is different from unlimited extra power. Voltage, current, and power are related but not interchangeable. This page cannot determine the condition or safety of any particular installation.</div>
+      </div>
+    </section>
+
+    <section class="section" id="phase-and-belief">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">03 / Visual explanations</div>
+          <div>
+            <h2>Three phases are not three times the “extra power.”</h2>
+            <p class="section-intro">A conceptual three-phase diagram can help separate an electrical system from the story someone tells about it. The diagrams below show phase relationships and a possible learning pathway; neither is evidence of a genetic cause or a clinical “brain misfire.”</p>
+          </div>
+        </div>
+        <div class="visual-grid">
+          <figure class="visual-card">
+            <h3>Three-phase voltage, conceptually</h3>
+            <p>In a balanced three-phase AC system, the phase voltages have the same frequency and are separated by 120 electrical degrees. Actual voltages and connections depend on the supply system.</p>
+            <svg class="diagram-svg" id="phase-chart" viewBox="0 0 520 220" role="img" aria-labelledby="phase-title phase-desc">
+              <title id="phase-title">Illustrative balanced three-phase voltage waveforms</title>
+              <desc id="phase-desc">Three sinusoidal phase-to-neutral voltage waveforms of equal amplitude, offset from one another by 120 degrees. This is a conceptual graph, not a wiring diagram.</desc>
+              <line x1="48" y1="105" x2="505" y2="105" stroke="#aaa79c"/>
+              <line x1="48" y1="25" x2="48" y2="190" stroke="#aaa79c"/>
+              <line x1="48" y1="58" x2="505" y2="58" stroke="#dddacf" stroke-dasharray="3 4"/>
+              <line x1="48" y1="152" x2="505" y2="152" stroke="#dddacf" stroke-dasharray="3 4"/>
+              <text x="12" y="35">voltage</text>
+              <text class="small" x="366" y="207">electrical angle →</text>
+              <path id="phase-a-wave" class="phase-wave phase-a"></path>
+              <path id="phase-b-wave" class="phase-wave phase-b"></path>
+              <path id="phase-c-wave" class="phase-wave phase-c"></path>
+              <text class="phase-a-label" x="425" y="44">Phase A</text>
+              <text class="phase-b-label" x="425" y="57">Phase B</text>
+              <text class="phase-c-label" x="425" y="70">Phase C</text>
+            </svg>
+            <p class="diagram-caption">Schematic phase-to-neutral waveforms only; not wiring instructions. A three-phase system supplies loads as designed—it does not gain extra voltage because protective devices are omitted.</p>
+          </figure>
+          <figure class="visual-card">
+            <h3>A possible belief pathway—not a diagnosis</h3>
+            <p>These are candidate influences to investigate with evidence. They are not steps proven to occur in every person or a model of literal neural firing.</p>
+            <svg class="diagram-svg" viewBox="0 0 520 220" role="img" aria-labelledby="belief-title belief-desc">
+              <title id="belief-title">Hypothesized learning pathway and unsupported DNA claim</title>
+              <desc id="belief-desc">Electrical terminology, a remembered trip, and a current-power mix-up may contribute to an incorrect shortcut. A separate DNA mutation cause is marked unsupported by evidence.</desc>
+              <defs>
+                <marker id="path-arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                  <path d="M0 0 7 3.5 0 7z" fill="#73766c"></path>
+                </marker>
+              </defs>
+              <rect class="path-box cue" x="12" y="20" width="139" height="46" rx="3"></rect>
+              <text x="24" y="39">Unclear device</text><text x="24" y="53">roles / power terms</text>
+              <rect class="path-box cue" x="12" y="86" width="139" height="46" rx="3"></rect>
+              <text x="24" y="105">Trip remembered</text><text x="24" y="119">after installation</text>
+              <rect class="path-box cue" x="12" y="152" width="139" height="46" rx="3"></rect>
+              <text x="24" y="171">Current confused</text><text x="24" y="185">with “more power”</text>
+              <path class="path-arrow" d="M151 43 C179 43 177 86 201 93"></path>
+              <path class="path-arrow" d="M151 109 H201"></path>
+              <path class="path-arrow" d="M151 175 C179 175 177 132 201 125"></path>
+              <rect class="path-box shortcut" x="205" y="72" width="135" height="74" rx="3"></rect>
+              <text x="218" y="94">Fast causal</text><text x="218" y="108">shortcut / learned</text><text x="218" y="122">interpretation?</text>
+              <path class="path-arrow" d="M340 109 H369"></path>
+              <rect class="path-box claimed" x="373" y="72" width="135" height="74" rx="3"></rect>
+              <text x="386" y="94">“No protection</text><text x="386" y="108">means more</text><text x="386" y="122">power”</text>
+              <rect class="path-box unsupported" x="210" y="174" width="245" height="34" rx="3"></rect>
+              <text x="224" y="195">DNA mutation caused this belief?</text>
+              <path class="cross-line" d="M449 174 477 205M477 174 449 205"></path>
+            </svg>
+            <p class="diagram-caption">The learning/interpretation links are hypotheses, not findings. The genetic explanation is crossed out as unsupported: this project has no evidence tying DNA mutations to electrical misconceptions.</p>
+          </figure>
+        </div>
+        <div class="note-box"><strong>Important distinction:</strong> Genetic variation can affect human traits in broad, complex ways; that does not show that a particular technical misconception is caused by a mutation. Establishing any such link would require appropriate human research, not a hand-authored neural-network demo.</div>
+      </div>
+    </section>
+
+    <section class="section" id="brain-model">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">04 / “Neural” lens</div>
+          <div>
+            <h2>A hypothesis sketch—not a brain scan.</h2>
+            <p class="section-intro">We do not have evidence here that “more-power syndrome” is a recognized condition or that most people hold this belief. The sliders below represent possible influences worth investigating, not measured causes or actual people.</p>
+          </div>
+        </div>
+        <div class="model-panel">
+          <div class="model-intro">
+            <div class="model-label">Hypothesis model / change the cues</div>
+            <p class="model-disclaimer">This hand-set toy network is not trained on survey or brain data. Its scores are model activations—not probabilities, diagnoses, or evidence that a factor causes the belief.</p>
+          </div>
+          <div class="model-grid">
+            <div class="controls" aria-label="Illustrative scenario inputs">
+              <div class="range-row">
+                <label for="complexity">Equate current with power <output id="complexity-value" for="complexity">50</output></label>
+                <input id="complexity" type="range" min="0" max="100" value="50">
+              </div>
+              <div class="range-row">
+                <label for="uncertainty">Unclear device roles <output id="uncertainty-value" for="uncertainty">50</output></label>
+                <input id="uncertainty" type="range" min="0" max="100" value="50">
+              </div>
+              <div class="range-row">
+                <label for="outage">Trip blamed on new device <output id="outage-value" for="outage">50</output></label>
+                <input id="outage" type="range" min="0" max="100" value="50">
+              </div>
+            </div>
+            <div class="model-visual">
+              <svg class="network" id="network" viewBox="0 0 500 150" role="img" aria-labelledby="network-title network-desc">
+                <title id="network-title">Illustrative neural-network diagram</title>
+                <desc id="network-desc">Three scenario inputs connect to two hidden nodes, which connect to two interpretation outputs.</desc>
+                <g id="connections"></g>
+                <g id="nodes"></g>
+              </svg>
+              <div class="network-key"><span>Scenario cues</span><span>Hidden mix</span><span>Interpretations</span></div>
+              <div class="output-bars" aria-live="polite">
+                <div class="bar-line"><span class="bar-label">“No device = more power”</span><span class="bar-track"><span class="bar-fill" id="bar-shortcut"></span></span><span class="bar-value" id="value-shortcut">—</span></div>
+                <div class="bar-line"><span class="bar-label">“Check supply &amp; fault”</span><span class="bar-track"><span class="bar-fill secondary" id="bar-context"></span></span><span class="bar-value" id="value-context">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p class="model-footnote">Interpret the outputs as a prompt to examine which cues are salient. Real human judgments involve many interacting factors, experience, context, and individual differences that this model does not represent.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="evolution">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">05 / Evolutionary computation</div>
+          <div>
+            <h2>Evolve a network to fit a made-up rule.</h2>
+            <p class="section-intro">A small genetic algorithm will evolve the weights of a feed-forward neural network to imitate an explicitly invented rule over synthetic examples. This demonstrates evolutionary neural-network optimization; it cannot discover why real people hold a belief without real, ethically collected data and a validated research design.</p>
+          </div>
+        </div>
+        <div class="evo-layout">
+          <div class="evo-card">
+            <h3>Train the synthetic network</h3>
+            <p>It selects, crosses, and mutates network weights to fit a fictional target. Your sliders are then passed through the evolved network. Its output reflects the invented rule—not population beliefs or electrical measurements.</p>
+            <button class="button" id="run-evolution" type="button">Evolve neural-network weights</button>
+            <div class="evo-output" id="evo-output" aria-live="polite">The network uses a hand-set illustrative starting point. Run evolution to fit the fictional rule on synthetic examples.</div>
+          </div>
+          <div class="evo-card chart-wrap">
+            <h3>Fit to the fictional rule by generation</h3>
+            <svg id="evo-chart" viewBox="0 0 520 185" role="img" aria-labelledby="chart-title chart-desc">
+              <title id="chart-title">Evolutionary neural-network training progress</title>
+              <desc id="chart-desc">Fit to the synthetic rule will be charted after training.</desc>
+              <line class="gridline" x1="40" y1="20" x2="505" y2="20"></line>
+              <line class="gridline" x1="40" y1="88" x2="505" y2="88"></line>
+              <line class="gridline" x1="40" y1="155" x2="505" y2="155"></line>
+              <text x="2" y="24">low error</text><text x="0" y="159">high error</text>
+              <text x="40" y="177">generation 0</text><text x="442" y="177">40</text>
+              <path class="chart-line" id="chart-line" d="M40 88 L505 88"></path>
+              <g id="chart-dots"></g>
+            </svg>
+            <div class="chart-caption">Lower error means a closer fit to the hand-authored synthetic labels. This is not a measure of accuracy about people or electrical safety.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why-beliefs">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">06 / Possible reasoning shortcuts</div>
+          <div>
+            <h2>How might this belief take hold?</h2>
+            <p class="section-intro">These are hypotheses to test, not established explanations or a diagnosis. People may have other reasons—and a report of weak supply or a trip can reflect a real installation or utility problem.</p>
+          </div>
+        </div>
+        <div class="reason-grid">
+          <article class="reason"><span class="reason-index">A / 01</span><h3>Power–current conflation</h3><p>Current is part of how electrical power is delivered, but “more current” is not automatically available useful power. A load, supply voltage, impedance, and ratings all matter.</p></article>
+          <article class="reason"><span class="reason-index">A / 02</span><h3>Protection-as-restriction</h3><p>A switch or breaker in a visible path can invite the intuition that it must continuously limit the supply. That does not describe how a correctly operating protective device normally behaves.</p></article>
+          <article class="reason"><span class="reason-index">A / 03</span><h3>Post hoc attribution</h3><p>If a trip happens after installation, the timing is memorable. It deserves investigation, but timing alone cannot tell whether the cause was a fault, wiring, device coordination, or something else.</p></article>
+          <article class="reason"><span class="reason-index">A / 04</span><h3>Uneven risk visibility</h3><p>Normal operation is easy to notice; hazards that protection is designed to reduce may be rare or invisible until a fault occurs. This can make prevention feel unnecessary—without showing that it is.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="references">
+      <div class="wrap">
+        <div class="section-heading">
+          <div class="kicker">Further reading</div>
+          <div>
+            <h2>Ground the explanation in reliable sources.</h2>
+            <p class="section-intro">This overview is educational, not a substitute for local electrical codes, manufacturer instructions, or qualified inspection. Device names and standards vary by jurisdiction.</p>
+            <ul class="sources">
+              <li><strong>Electrical safety:</strong> <a href="https://www.electricalsafetyfirst.org.uk/guidance/safety-around-the-home/rcds/" target="_blank" rel="noreferrer">Electrical Safety First — RCDs</a></li>
+              <li><strong>Protective device definitions:</strong> <a href="https://www.electropedia.org/" target="_blank" rel="noreferrer">IEC Electropedia (International Electrotechnical Vocabulary)</a></li>
+              <li><strong>Reasoning and judgment:</strong> <a href="https://doi.org/10.1037/0033-295X.108.3.453" target="_blank" rel="noreferrer">Kahneman, “A perspective on judgment and choice” (2001)</a></li>
+              <li><strong>Evolutionary computation:</strong> <a href="https://doi.org/10.1109/21.256484" target="_blank" rel="noreferrer">Goldberg, “Genetic Algorithms in Search, Optimization, and Machine Learning”</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer wrap">
+    <span class="footer-note">The Circuit Confusion Lab / Educational prototype</span>
+    <span class="disclaimer">If a breaker trips, a stabilizer disconnects, or supply behaves unexpectedly, do not bypass protection. Have a licensed electrician assess the equipment and installation.</span>
+  </footer>
+  <script>
+    const sliders = {
+      complexity: document.getElementById("complexity"),
+      uncertainty: document.getElementById("uncertainty"),
+      outage: document.getElementById("outage")
+    };
+    const hiddenCount = 2;
+    const outputCount = 2;
+    let networkWeights = [
+      1.1, 1.3, 1,
+      -0.5, -0.6, -0.8,
+      -1.7, 1.3,
+      1, 0, 0, 1,
+      0, 0
+    ];
+    const connections = document.getElementById("connections");
+    const nodes = document.getElementById("nodes");
+    const inputXs = [95, 95, 95];
+    const inputYs = [38, 75, 112];
+    const hiddenXs = [260, 260];
+    const hiddenYs = [53, 98];
+    const outputXs = [420, 420];
+    const outputYs = [53, 98];
+
+    function drawPhaseWaves() {
+      const phases = [
+        ["phase-a-wave", 0],
+        ["phase-b-wave", 2 * Math.PI / 3],
+        ["phase-c-wave", 4 * Math.PI / 3]
+      ];
+      phases.forEach(([id, offset]) => {
+        const points = Array.from({ length: 121 }, (_, index) => {
+          const progress = index / 120;
+          const x = 48 + progress * 457;
+          const y = 105 - Math.sin(progress * 4 * Math.PI - offset) * 48;
+          return `${index === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+        });
+        document.getElementById(id).setAttribute("d", points.join(" "));
+      });
+    }
+
+    function createNetwork() {
+      const lines = [];
+      inputYs.forEach((y, input) => hiddenYs.forEach((hy, hidden) => {
+        lines.push(`<line data-from="i${input}" data-to="h${hidden}" x1="${inputXs[input]}" y1="${y}" x2="${hiddenXs[hidden]}" y2="${hy}"></line>`);
+      }));
+      hiddenYs.forEach((y, hidden) => outputYs.forEach((oy, output) => {
+        lines.push(`<line data-from="h${hidden}" data-to="o${output}" x1="${hiddenXs[hidden]}" y1="${y}" x2="${outputXs[output]}" y2="${oy}"></line>`);
+      }));
+      connections.innerHTML = lines.join("");
+      const circles = [
+        ...inputYs.map((y, i) => `<circle data-node="i${i}" cx="${inputXs[i]}" cy="${y}" r="8"></circle>`),
+        ...hiddenYs.map((y, i) => `<circle data-node="h${i}" cx="${hiddenXs[i]}" cy="${y}" r="11"></circle>`),
+        ...outputYs.map((y, i) => `<circle data-node="o${i}" cx="${outputXs[i]}" cy="${y}" r="9"></circle>`)
+      ];
+      const labels = [
+        `<text x="4" y="41">power/current</text>`,
+        `<text x="4" y="78">device roles</text>`,
+        `<text x="4" y="115">trip timing</text>`,
+        `<text class="output-label" x="434" y="57">shortcut</text>`,
+        `<text class="output-label" x="434" y="102">review</text>`
+      ];
+      nodes.innerHTML = circles.join("") + labels.join("");
+    }
+
+    function sigmoid(value) {
+      return 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, value))));
+    }
+
+    function predict(weights, inputs) {
+      const hiddenBiasStart = 6;
+      const outputWeightStart = hiddenBiasStart + hiddenCount;
+      const outputBiasStart = outputWeightStart + hiddenCount * outputCount;
+      const hidden = Array.from({ length: hiddenCount }, (_, hiddenIndex) => {
+        const offset = hiddenIndex * inputs.length;
+        const sum = inputs.reduce((total, input, inputIndex) =>
+          total + input * weights[offset + inputIndex], weights[hiddenBiasStart + hiddenIndex]);
+        return sigmoid(sum);
+      });
+      const outputs = Array.from({ length: outputCount }, (_, outputIndex) => {
+        const offset = outputWeightStart + outputIndex * hiddenCount;
+        const sum = hidden.reduce((total, value, hiddenIndex) =>
+          total + value * weights[offset + hiddenIndex], weights[outputBiasStart + outputIndex]);
+        return sigmoid(sum);
+      });
+      return { hidden, outputs };
+    }
+
+    function updateModel() {
+      const cues = Object.fromEntries(Object.entries(sliders).map(([key, slider]) => {
+        const value = Number(slider.value) / 100;
+        document.getElementById(`${key}-value`).value = slider.value;
+        document.getElementById(`${key}-value`).textContent = slider.value;
+        return [key, value];
+      }));
+      const values = Object.values(cues);
+      const { hidden, outputs } = predict(networkWeights, values);
+      const [shortcut, context] = outputs;
+      document.getElementById("bar-shortcut").style.width = `${Math.round(shortcut * 100)}%`;
+      document.getElementById("bar-context").style.width = `${Math.round(context * 100)}%`;
+      document.getElementById("value-shortcut").textContent = Math.round(shortcut * 100);
+      document.getElementById("value-context").textContent = Math.round(context * 100);
+      const strengths = [...values, ...hidden, ...outputs];
+      [...nodes.querySelectorAll("circle")].forEach((circle, index) => {
+        circle.classList.toggle("active", strengths[index] > 0.58);
+      });
+      connections.querySelectorAll("line").forEach(line => {
+        const source = line.dataset.from;
+        const target = line.dataset.to;
+        const fromIndex = Number(source.slice(1));
+        const toIndex = Number(target.slice(1));
+        const fromStrength = source[0] === "i" ? values[fromIndex] : hidden[fromIndex];
+        const toStrength = target[0] === "h" ? hidden[toIndex] : outputs[toIndex];
+        line.classList.toggle("active", fromStrength > 0.58 && toStrength > 0.58);
+      });
+      return { cues, values };
+    }
+
+    function syntheticExamples() {
+      const levels = [0, 0.25, 0.5, 0.75, 1];
+      const examples = [];
+      levels.forEach(currentPower => levels.forEach(uncertainRole => levels.forEach(postHoc => {
+        const inputs = [currentPower, uncertainRole, postHoc];
+        const shortcut = sigmoid(-1.7 + 1.1 * currentPower + 1.3 * uncertainRole + postHoc);
+        const context = sigmoid(1.3 - 0.5 * currentPower - 0.6 * uncertainRole - 0.8 * postHoc);
+        examples.push({ inputs, targets: [shortcut, context] });
+      })));
+      return examples;
+    }
+
+    function randomGenome() {
+      return Array.from({ length: 14 }, () => (Math.random() * 2 - 1) * 1.5);
+    }
+
+    function fitness(genome, examples) {
+      const squaredError = examples.reduce((sum, example) => {
+        const { outputs } = predict(genome, example.inputs);
+        return sum + outputs.reduce((error, output, index) =>
+          error + (output - example.targets[index]) ** 2, 0);
+      }, 0);
+      return squaredError / (examples.length * outputCount);
+    }
+
+    function tournament(population, examples) {
+      let winner = population[Math.floor(Math.random() * population.length)];
+      for (let i = 0; i < 3; i += 1) {
+        const challenger = population[Math.floor(Math.random() * population.length)];
+        if (fitness(challenger, examples) < fitness(winner, examples)) winner = challenger;
+      }
+      return winner;
+    }
+
+    function evolve() {
+      const examples = syntheticExamples();
+      const populationSize = 64;
+      const generationCount = 40;
+      let population = Array.from({ length: populationSize }, randomGenome);
+      const history = [Math.min(...population.map(candidate => fitness(candidate, examples)))];
+      for (let generation = 0; generation < generationCount; generation += 1) {
+        const nextPopulation = [population.reduce((best, candidate) =>
+          fitness(candidate, examples) < fitness(best, examples) ? candidate : best
+        )];
+        while (nextPopulation.length < populationSize) {
+          const first = tournament(population, examples);
+          const second = tournament(population, examples);
+          const child = first.map((gene, index) => {
+            const blend = Math.random();
+            let value = gene * blend + second[index] * (1 - blend);
+            if (Math.random() < 0.16) value += (Math.random() - 0.5) * 0.8;
+            return Math.max(-5, Math.min(5, value));
+          });
+          nextPopulation.push(child);
+        }
+        population = nextPopulation;
+        history.push(Math.min(...population.map(candidate => fitness(candidate, examples))));
+      }
+      const best = population.reduce((winner, candidate) =>
+        fitness(candidate, examples) < fitness(winner, examples) ? candidate : winner
+      );
+      return { best, history, error: fitness(best, examples) };
+    }
+
+    function drawHistory(history) {
+      const left = 40;
+      const right = 505;
+      const top = 20;
+      const bottom = 155;
+      const maxError = Math.max(...history, 0.001);
+      const points = history.map((score, index) => {
+        const x = left + (right - left) * index / (history.length - 1);
+        const y = top + (bottom - top) * score / maxError;
+        return [x, y];
+      });
+      document.getElementById("chart-line").setAttribute("d", points.map((point, index) =>
+        `${index === 0 ? "M" : "L"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`
+      ).join(" "));
+      document.getElementById("chart-dots").innerHTML = points.map(([x, y]) =>
+        `<circle class="chart-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3"></circle>`
+      ).join("");
+      document.getElementById("chart-desc").textContent =
+        `Mean squared error against synthetic labels over ${history.length - 1} generations. Lower error indicates a closer fit to the hand-authored rule, not an empirical measurement.`;
+    }
+
+    Object.values(sliders).forEach(slider => slider.addEventListener("input", updateModel));
+    document.getElementById("run-evolution").addEventListener("click", event => {
+      const { best, history, error } = evolve();
+      networkWeights = best;
+      drawHistory(history);
+      updateModel();
+      const output = document.getElementById("evo-output");
+      output.textContent = `The evolved network fits the hand-authored synthetic rule with mean squared error ${error.toFixed(4)}. Its current outputs are hypothetical model activations—not probabilities about people, causal findings, or electrical measurements.`;
+    });
+
+    drawPhaseWaves();
+    createNetwork();
+    updateModel();
+  </script>
+</body>
+</html>
